@@ -1,0 +1,25 @@
+{
+  "name": "nftree-ui",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc -b && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@reown/appkit": "^1.5.3",
+    "@reown/appkit-adapter-wagmi": "^1.5.3",
+    "@tanstack/vue-query": "^5.62.0",
+    "@wagmi/vue": "^0.0.67",
+    "viem": "^2.21.53",
+    "vue": "^3.5.13"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.1",
+    "typescript": "~5.6.2",
+    "vite": "^6.0.1",
+    "vue-tsc": "^2.1.10"
+  }
+}
