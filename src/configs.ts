@@ -1,6 +1,6 @@
 export const configs = {
   projectId: "f63b9a7d56918f3d22562760af474053",
-  contractAddress: "0x132FD7Ec071cd40455d804A7829bc7731247947d",
+  contractAddress: "0x2e8724959dD87C4AC9D894c93dd9d8fb9A575839",
   metadata: {
     name: "Rifai Sicilia - Adopt Trees",
     description: "Adopt Trees with Rifai Sicilia",

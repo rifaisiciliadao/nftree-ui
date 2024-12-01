@@ -41,7 +41,7 @@ async function fetchCampaign() {
   startDate.value = new Date(Number(result[1]) * 1000)
   endDate.value = new Date(Number(result[2]) * 1000)
   totalTrees.value = result[3] as number
-  mintedTrees.value = result[4] as number
+  mintedTrees.value = await NFTContract.campaignTreeIds(campaignId.value)
   pricePerTree.value = Number(result[7])
   tokenAddress.value = result[6] as string
   beneficiary.value = result[5] as string
@@ -145,7 +145,11 @@ onMounted(() => {
 
 <template>
   <div class="container">
-    <h1>Adopt trees with Rifai</h1>
+    <img src="/logo_header.svg" alt="Rifai logo" class="logo" />
+    <h1>Adopt trees with Rifai Sicilia</h1>
+    <p class="description">Adopt trees with Rifai Sicilia, you will receive a tree NFT for each tree you adopt.
+      Our public planting campaign is live on Arbitrum, you can adopt trees from the campaign below or propose your own
+      campaign by <a href="https://x.com/RifaiSicilia" target="_blank">contacting us</a>.</p>
     <appkit-button />
     <div class="campaign" v-if="isConnected">
       <div v-if="campaign" class="campaign-card">
