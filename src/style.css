@@ -92,6 +92,18 @@ button:focus-visible {
   padding: 0 24px;
 }
 
+.footer {
+  margin-top: 24px;
+  font-size: 14px;
+  color: #6b7280;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+  background: #f1ff68;
+  padding: 12px;
+}
+
 .campaign-nfts {
   margin-top: 24px;
   background: #f9fafb;

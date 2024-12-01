@@ -217,5 +217,8 @@ onMounted(() => {
         <p>loading...</p>
       </div>
     </div>
+    <div class="footer"><a href="https://github.com/rifaisiciliadao" target="_blank">Open source</a> project by <a
+        href="https://x.com/RifaiSicilia" target="_blank">RifaiSiciliaDAO</a>
+    </div>
   </div>
 </template>
