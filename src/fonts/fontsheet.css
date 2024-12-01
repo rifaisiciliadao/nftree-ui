@@ -1,0 +1,48 @@
+@font-face {
+    font-family: 'Ambit';
+    src: url('Ambit-SemiBold.eot');
+    src: url('Ambit-SemiBold.eot?#iefix') format('embedded-opentype'),
+        url('Ambit-SemiBold.woff2') format('woff2'),
+        url('Ambit-SemiBold.woff') format('woff'),
+        url('Ambit-SemiBold.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Ambit';
+    src: url('Ambit-Regular.eot');
+    src: url('Ambit-Regular.eot?#iefix') format('embedded-opentype'),
+        url('Ambit-Regular.woff2') format('woff2'),
+        url('Ambit-Regular.woff') format('woff'),
+        url('Ambit-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'HelveticaNowDisplay';
+    src: url('HelveticaNowDisplay-Regular.eot');
+    src: url('HelveticaNowDisplay-Regular.eot?#iefix') format('embedded-opentype'),
+        url('HelveticaNowDisplay-Regular.woff2') format('woff2'),
+        url('HelveticaNowDisplay-Regular.woff') format('woff'),
+        url('HelveticaNowDisplay-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'HelveticaNowDisplay';
+    src: url('HelveticaNowDisplay-Light.eot');
+    src: url('HelveticaNowDisplay-Light.eot?#iefix') format('embedded-opentype'),
+        url('HelveticaNowDisplay-Light.woff2') format('woff2'),
+        url('HelveticaNowDisplay-Light.woff') format('woff'),
+        url('HelveticaNowDisplay-Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+

@@ -1,11 +1,12 @@
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: "HelveticaNowDisplay", system-ui, Avenir, Helvetica, Arial,
+    sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: #000;
+  background-color: #f1ff68;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -15,11 +16,11 @@
 
 a {
   font-weight: 500;
-  color: #646cff;
+  color: #a2fcab;
   text-decoration: inherit;
 }
 a:hover {
-  color: #535bf2;
+  color: #4576ff;
 }
 
 body {
@@ -63,6 +64,116 @@ button:focus-visible {
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.campaign {
+  margin-top: 20px;
+}
+
+.campaign-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  padding: 24px;
+  max-width: 800px;
+  margin: 24px auto;
+}
+
+.campaign-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.campaign-image {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+.campaign-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.campaign-description {
+  color: #4b5563;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.campaign-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.adopt-button {
+  background-color: #a2fcab;
+  color: #1a1a1a;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 28px;
+  width: 100%;
+}
+
+.detail-item {
+  padding: 12px;
+  background: #f9fafb;
+  border-radius: 8px;
+}
+
+.address-item {
+  background: #f9fafb;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.label {
+  display: block;
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.value {
+  font-weight: 500;
+  color: #1a1a1a;
+}
+
+.truncate {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #6b7280;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Ambit", "HelveticaNowDisplay", system-ui, Avenir, Helvetica,
+    Arial, sans-serif;
 }
 
 @media (prefers-color-scheme: light) {
