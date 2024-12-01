@@ -41,7 +41,8 @@ async function fetchCampaign() {
   startDate.value = new Date(Number(result[1]) * 1000)
   endDate.value = new Date(Number(result[2]) * 1000)
   totalTrees.value = result[3] as number
-  mintedTrees.value = await NFTContract.campaignTreeIds(campaignId.value)
+  const treeIds = await NFTContract.getCampaignTreeIds(campaignId.value)
+  mintedTrees.value = treeIds.length
   pricePerTree.value = Number(result[7])
   tokenAddress.value = result[6] as string
   beneficiary.value = result[5] as string
