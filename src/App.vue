@@ -1,39 +1,13 @@
 <script lang="ts" setup>
-import { createAppKit, useAppKitAccount } from '@reown/appkit/vue'
+import { createAppKit, useAppKitAccount, useAppKitProvider } from '@reown/appkit/vue'
 import { arbitrum, type AppKitNetwork } from '@reown/appkit/networks'
-import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
 import { configs } from './configs'
-import { cookieStorage, createStorage, readContract, writeContract } from '@wagmi/core'
+import { EthersAdapter } from '@reown/appkit-adapter-ethers'
 import { nftreeAbi } from './abis/nftree'
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { erc20Abi } from './abis/erc20'
-
-const metadata = {
-  name: 'Rifai Sicilia - Adopt Trees',
-  description: 'Adopt Trees with Rifai Sicilia',
-  url: 'https://adopt.rifasicilia.com',
-  icons: ['https://github.com/rifaisicilidao/nftree-ui/blob/main/public/logo.png']
-}
-
-const networks: [AppKitNetwork, ...AppKitNetwork[]] = [arbitrum]
-const wagmiAdapter = new WagmiAdapter({
-  networks,
-  projectId: configs.projectId,
-  storage: createStorage({
-    storage: cookieStorage
-  }),
-})
-
-createAppKit({
-  adapters: [wagmiAdapter],
-  networks,
-  projectId: configs.projectId,
-  metadata,
-  themeMode: 'light',
-  features: {
-    analytics: true
-  }
-})
+import { BrowserProvider, Contract, Eip1193Provider } from 'ethers'
+import axios from 'axios'
 
 const accountData = useAppKitAccount()
 const isConnected = computed(() => accountData.value.isConnected)
@@ -50,16 +24,20 @@ const tokenDecimals = ref<number | null>(null)
 const rifaiDonationFee = ref<number | null>(null)
 const buttonText = ref<string>('Adopt a tree')
 const buttonDisabled = ref<boolean>(false)
+const nfts = ref<any[]>([])
+const campaignId = ref<number | null>(1)
 
 async function fetchCampaign() {
-  if (!isConnected.value) return
-  const result: any = await readContract(wagmiAdapter.wagmiConfig, {
-    address: configs.contractAddress as `0x${string}`,
-    abi: nftreeAbi,
-    functionName: 'plantingCampaigns',
-    args: [1],
-  })
+  if (!accountData.value.isConnected) return
+  const { walletProvider } = useAppKitProvider('eip155')
+  const ethersProvider = new BrowserProvider(walletProvider as Eip1193Provider)
+  const signer = await ethersProvider.getSigner()
+  // Reading the campaign data
+  const NFTContract = new Contract(configs.contractAddress, nftreeAbi, signer)
+  const result: any = await NFTContract.plantingCampaigns(campaignId.value)
+  // Parsing the result
   campaign.value = JSON.parse(result[0] as string)
+  campaign.value.id = campaignId.value
   startDate.value = new Date(Number(result[1]) * 1000)
   endDate.value = new Date(Number(result[2]) * 1000)
   totalTrees.value = result[3] as number
@@ -70,41 +48,58 @@ async function fetchCampaign() {
   rifaiDonationFee.value = Number(result[8])
   clearInterval(fetchInterval)
   // Fetch token informations
-  const tokenSymbolResult = await readContract(wagmiAdapter.wagmiConfig, {
-    address: tokenAddress.value as `0x${string}`,
-    abi: erc20Abi,
-    functionName: 'symbol',
-  })
+  const tokenContract = new Contract(tokenAddress.value as `0x${string}`, erc20Abi, signer)
+  const tokenSymbolResult = await tokenContract.symbol()
   tokenSymbol.value = tokenSymbolResult as string
-  const tokenDecimalsResult = await readContract(wagmiAdapter.wagmiConfig, {
-    address: tokenAddress.value as `0x${string}`,
-    abi: erc20Abi,
-    functionName: 'decimals',
-  })
+  const tokenDecimalsResult = await tokenContract.decimals()
   tokenDecimals.value = Number(tokenDecimalsResult)
+  getNFTsByOwner()
+}
+
+async function getNFTsByOwner() {
+  if (!isConnected.value) return
+  const { walletProvider } = useAppKitProvider('eip155')
+  const ethersProvider = new BrowserProvider(walletProvider as Eip1193Provider)
+  const signer = await ethersProvider.getSigner()
+  const NFTContract = new Contract(configs.contractAddress, nftreeAbi, signer)
+  // Fetching the NFTs
+  const endpoint = `https://arb-mainnet.g.alchemy.com/nft/v3/${configs.alchemyApiKey}/getNFTsForOwner?owner=${accountData.value.address}&contractAddresses[]=${configs.contractAddress}`
+  const result = await axios.get(endpoint)
+  nfts.value = []
+  const ids = []
+  const parsedNfts = []
+  for (const nft of result.data.ownedNfts) {
+    ids.push(nft.tokenId)
+    parsedNfts.push({
+      tokenId: nft.tokenId,
+      campaignId: await NFTContract.treeIdToCampaignId(nft.tokenId)
+    })
+  }
+  const extendedMetadata = await NFTContract.getTreeExtendedMetadataBatch(ids)
+  for (const nft of parsedNfts) {
+    nfts.value.push({
+      ...nft,
+      extendedMetadata: extendedMetadata[nft.tokenId]
+    })
+  }
 }
 
 async function adoptTree() {
   if (!isConnected.value) return
   buttonText.value = 'Checking allowance...'
   buttonDisabled.value = true
-  const allowance = await readContract(wagmiAdapter.wagmiConfig, {
-    address: tokenAddress.value as `0x${string}`,
-    abi: erc20Abi,
-    functionName: 'allowance',
-    args: [accountData.value.address, configs.contractAddress],
-  })
+  const { walletProvider } = useAppKitProvider('eip155')
+  const ethersProvider = new BrowserProvider(walletProvider as Eip1193Provider)
+  const signer = await ethersProvider.getSigner()
+  // Checking the allowance
+  const tokenContract = new Contract(tokenAddress.value as `0x${string}`, erc20Abi, signer)
+  const allowance = await tokenContract.allowance(accountData.value.address, configs.contractAddress)
   console.log('Allowance', allowance)
   if (Number(allowance) < Number(pricePerTree.value)) {
     console.log('Not enough allowance, need to approve first')
     buttonText.value = 'Approving...'
     try {
-      const result = await writeContract(wagmiAdapter.wagmiConfig, {
-        address: tokenAddress.value as `0x${string}`,
-        abi: erc20Abi,
-        functionName: 'approve',
-        args: [configs.contractAddress, pricePerTree.value],
-      })
+      const result = await tokenContract.approve(configs.contractAddress, pricePerTree.value)
       console.log(result)
       setTimeout(() => {
         buttonText.value = 'Waiting for confirmation...'
@@ -119,12 +114,8 @@ async function adoptTree() {
   }
   buttonText.value = 'Adopting tree..'
   try {
-    const result = await writeContract(wagmiAdapter.wagmiConfig, {
-      address: configs.contractAddress as `0x${string}`,
-      abi: nftreeAbi,
-      functionName: 'adoptTree',
-      args: [1, accountData.value.address],
-    })
+    const NFTContract = new Contract(configs.contractAddress, nftreeAbi, signer)
+    const result = await NFTContract.adoptTree(campaignId.value, accountData.value.address)
     console.log(result)
     await fetchCampaign()
     buttonDisabled.value = false
@@ -136,6 +127,20 @@ async function adoptTree() {
 }
 
 const fetchInterval = setInterval(fetchCampaign, 1000)
+onMounted(() => {
+  const networks: [AppKitNetwork, ...AppKitNetwork[]] = [arbitrum]
+
+  createAppKit({
+    adapters: [new EthersAdapter()],
+    networks,
+    projectId: configs.projectId,
+    metadata: configs.metadata,
+    themeMode: 'light',
+    features: {
+      analytics: true
+    }
+  })
+})
 </script>
 
 <template>
@@ -185,6 +190,22 @@ const fetchInterval = setInterval(fetchCampaign, 1000)
           </div>
           <button class="adopt-button" :disabled="buttonDisabled" @click="adoptTree">{{
             buttonText }}</button>
+        </div>
+
+        <div class="campaign-nfts">
+          <h2>My adopted Trees</h2>
+          <div class="nfts" v-if="nfts.length > 0">
+            <div v-for="nft in nfts" :key="nft.tokenId">
+              <div class="nft" v-if="nft.campaignId.toString() === campaign.id.toString()">
+                <!-- <img :src="nft.extendedMetadata.image" alt="nft image" class="nft-image" /> -->
+                <div class="tree">🌳</div>
+                #{{ nft.tokenId }}
+              </div>
+            </div>
+          </div>
+          <div v-if="nfts.length === 0">
+            <p>You have not adopted any trees yet 😭.</p>
+          </div>
         </div>
       </div>
       <div v-if="!campaign" class="loading">

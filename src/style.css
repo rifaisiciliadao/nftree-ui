@@ -86,6 +86,17 @@ button:focus-visible {
   margin: 24px auto;
 }
 
+.campaign-nfts {
+  margin-top: 24px;
+  background: #f9fafb;
+  padding: 24px;
+  border-radius: 16px;
+}
+
+.tree {
+  font-size: 48px;
+}
+
 .campaign-header {
   text-align: center;
   margin-bottom: 24px;
